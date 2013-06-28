@@ -1,0 +1,24 @@
+{
+  "name": "getscreenmedia",
+  "version": "0.0.1",
+  "description": "A module for attempting to get access to a MediaStream of a user's screen. With a nice node-like API.",
+  "main": "getscreenmedia.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HenrikJoreteg/getScreenMedia"
+  },
+  "keywords": [
+    "browser",
+    "getUserMedia",
+    "screen sharing",
+    "WebRTC"
+  ],
+  "author": "Henrik Joreteg <henrik@andyet.net>",
+  "license": "MIT",
+  "dependencies": {
+    "getusermedia": "0.1.0"
+  },
+  "devDependencies": {
+    "browserify": "2.x"
+  }
+}
