@@ -23,9 +23,9 @@ npm install getscreenmedia
 With this helper it's clean/simple to get access to a user's camera, mic, etc.
 
 ```js
-var getUserMedia = require('getscreenmedia');
+var getScreenMedia = require('getscreenmedia');
 
-getscreenmedia(function (err, stream) {
+getScreenMedia(function (err, stream) {
     // if the browser doesn't support user media
     // or the user says "no" the error gets passed
     // as the first argument.
