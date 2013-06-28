@@ -1,6 +1,6 @@
 {
   "name": "getscreenmedia",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A browser module for attempting to get access to a MediaStream of a user's screen. With a nice node-like API.",
   "main": "getscreenmedia.js",
   "repository": {

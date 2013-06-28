@@ -11,7 +11,11 @@ module.exports = function (cb) {
         };
 
     if (window.location.protocol === 'http:') {
-        return cb(new Error('HttpsRequired'))
+        return cb(new Error('HttpsRequired'));
+    }
+
+    if (!navigator.webkitGetUserMedia) {
+        return cb(new Error('NotSupported'));
     }
 
     getUserMedia(constraints, cb);
