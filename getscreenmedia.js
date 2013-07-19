@@ -9,13 +9,18 @@ module.exports = function (cb) {
                 }
             }
         };
+    var error;
 
     if (window.location.protocol === 'http:') {
-        return cb(new Error('HttpsRequired'));
+        error = new Error('NavigatorUserMediaError');
+        error.reason = 'HTTPS_REQUIRED';
+        return cb();
     }
 
     if (!navigator.webkitGetUserMedia) {
-        return cb(new Error('NotSupported'));
+        error = new Error('NavigatorUserMediaError');
+        error.reason = 'NOT_SUPPORTED';
+        return cb(error);
     }
 
     getUserMedia(constraints, cb);
