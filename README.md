@@ -42,6 +42,16 @@ getScreenMedia(function (err, stream) {
 
 It's ugly and annoying to check for support without this tool. Node-style (error-first) APIs that are cross-browser, installable with npm and runnable on the client === win!
 
+## Error handling
+
+Error handling (denied requests, etc) are handled mostly by the underlying [getUserMedia lib](https://github.com/HenrikJoreteg/getUserMedia). However this adds one more error type:
+
+- `"HTTPS_REQUIRED"`
+
+Because that's a current requirement of Chrome, the only browser that currently supports screensharing.
+
+See the [handling errors section of the getUserMedia lib](https://github.com/HenrikJoreteg/getUserMedia#handling-errors-summary) for details about how errors are handled. 
+
 
 ## License
 

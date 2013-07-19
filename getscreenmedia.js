@@ -13,13 +13,7 @@ module.exports = function (cb) {
 
     if (window.location.protocol === 'http:') {
         error = new Error('NavigatorUserMediaError');
-        error.reason = 'HTTPS_REQUIRED';
-        return cb();
-    }
-
-    if (!navigator.webkitGetUserMedia) {
-        error = new Error('NavigatorUserMediaError');
-        error.reason = 'NOT_SUPPORTED';
+        error.name = 'HTTPS_REQUIRED';
         return cb(error);
     }
 
