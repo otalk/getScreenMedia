@@ -8,7 +8,7 @@ It gives us a cleaner node.js-style, error-first API and cross-browser handling.
 
 Suitable for use with browserify/CommonJS on the client. 
 
-If you're not using browserify or you want AMD support use `getscreenmedia.bundle.js`.
+If you're not using browserify or you want AMD support use `getscreenmedia.bundle.js`. Note that if no module system is detected it will attach a function called `getScreenMedia` to `window`.
 
 
 ## Installing

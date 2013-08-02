@@ -1,6 +1,5 @@
-var bundle = require('browserify')(),
-    fs = require('fs');
-
+var bundle = require('browserify')();
+var fs = require('fs');
 
 bundle.add('./getscreenmedia');
-bundle.bundle({standalone: 'getscreenmedia'}).pipe(fs.createWriteStream('getscreenmedia.bundle.js'));
+bundle.bundle({standalone: 'getScreenMedia'}).pipe(fs.createWriteStream('getscreenmedia.bundle.js'));
