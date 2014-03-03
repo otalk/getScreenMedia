@@ -1,21 +1,26 @@
 // getScreenMedia helper by @HenrikJoreteg
 var getUserMedia = require('getusermedia');
 
-module.exports = function (cb) {
-    var constraints = {
-            video: {
-                mandatory: {
-                    chromeMediaSource: 'screen'
-                }
-            }
-        };
+module.exports = function (constraints, cb) {
+    var hasConstraints = arguments.length === 2;
+    var callback = hasConstraints ? cb : constraints;
     var error;
 
-    if (window.location.protocol === 'http:') {
+    if (typeof window === 'undefined' || window.location.protocol === 'http:') {
         error = new Error('NavigatorUserMediaError');
         error.name = 'HTTPS_REQUIRED';
-        return cb(error);
+        return callback(error);
     }
 
-    getUserMedia(constraints, cb);
+    constraints = (hasConstraints && constraints) || { 
+        video: {
+            mandatory: {
+                maxWidth: window.screen.width,
+                maxHeight: window.screen.height,
+                maxFrameRate: 3,
+                chromeMediaSource: 'screen'
+            }
+        }
+    };
+    getUserMedia(constraints, callback);
 };
