@@ -25,6 +25,7 @@ module.exports = function (constraints, cb) {
             constraints = (hasConstraints && constraints) || { 
                 video: {
                     mandatory: {
+                        googLeakyBucket: true,
                         maxWidth: window.screen.width,
                         maxHeight: window.screen.height,
                         maxFrameRate: 3,
@@ -64,9 +65,10 @@ window.addEventListener('message', function (event) {
             constraints = constraints || {audio: false, video: {mandatory: {
                 chromeMediaSource: 'desktop', 
                 chromeMediaSourceId: event.data.sourceId,
+                googLeakyBucket: true,
                 maxWidth: window.screen.width,
                 maxHeight: window.screen.height,
-                maxFrameRate: 3,
+                maxFrameRate: 3
             }}};
             getUserMedia(constraints, callback);
         }
