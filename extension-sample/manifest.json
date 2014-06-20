@@ -14,6 +14,6 @@
   },
   "content_scripts": [ {
     "js": [ "content.js" ],
-    "matches": [ "https://example.org/*" ]
+    "matches": [ "https://simplewebrtc.com/*" ]
   }]
 }
