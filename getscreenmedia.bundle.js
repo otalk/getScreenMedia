@@ -59,18 +59,23 @@ window.addEventListener('message', function (event) {
         delete cache[event.data.id];
 
         if (event.data.sourceId === '') { // user canceled
-            var error = error = new Error('NavigatorUserMediaError');
+            var error = new Error('NavigatorUserMediaError');
             error.name = 'PERMISSION_DENIED';
             callback(error);
         } else {
-            constraints = constraints || {audio: false, video: {mandatory: {
-                chromeMediaSource: 'desktop', 
-                chromeMediaSourceId: event.data.sourceId,
-                googLeakyBucket: true,
-                maxWidth: window.screen.width,
-                maxHeight: window.screen.height,
-                maxFrameRate: 3
-            }}};
+            constraints = constraints || {audio: false, video: {
+                mandatory: {
+                    chromeMediaSource: 'desktop',
+                    chromeMediaSourceId: event.data.sourceId,
+                },
+                optional: [
+                    {maxWidth: window.screen.width},
+                    {maxHeight: window.screen.height},
+                    {maxFrameRate: 3},
+                    {googLeakyBucket: true},
+                    {googTemporalLayeredScreencast: true}
+                ]
+            }};
             getUserMedia(constraints, callback);
         }
     } else if (event.data.type == 'getScreenPending') {
@@ -91,8 +96,8 @@ module.exports = function (constraints, cb) {
     var haveOpts = arguments.length === 2;
     var defaultOpts = {video: true, audio: true};
     var error;
-    var denied = 'PERMISSION_DENIED';
-    var notSatified = 'CONSTRAINT_NOT_SATISFIED';
+    var denied = 'PermissionDeniedError';
+    var notSatified = 'ConstraintNotSatisfiedError';
 
     // make constraints optional
     if (!haveOpts) {
@@ -103,8 +108,8 @@ module.exports = function (constraints, cb) {
     // treat lack of browser support like an error
     if (!func) {
         // throw proper error per spec
-        error = new Error('NavigatorUserMediaError');
-        error.name = 'NOT_SUPPORTED_ERROR';
+        error = new Error('MediaStreamError');
+        error.name = 'NotSupportedError';
         return cb(error);
     }
 
@@ -116,7 +121,7 @@ module.exports = function (constraints, cb) {
         // there are only two valid names according to the spec
         // we coerce all non-denied to "constraint not satisfied".
         if (typeof err === 'string') {
-            error = new Error('NavigatorUserMediaError');
+            error = new Error('MediaStreamError');
             if (err === denied) {
                 error.name = denied;
             } else {

@@ -58,18 +58,23 @@ window.addEventListener('message', function (event) {
         delete cache[event.data.id];
 
         if (event.data.sourceId === '') { // user canceled
-            var error = error = new Error('NavigatorUserMediaError');
+            var error = new Error('NavigatorUserMediaError');
             error.name = 'PERMISSION_DENIED';
             callback(error);
         } else {
-            constraints = constraints || {audio: false, video: {mandatory: {
-                chromeMediaSource: 'desktop', 
-                chromeMediaSourceId: event.data.sourceId,
-                googLeakyBucket: true,
-                maxWidth: window.screen.width,
-                maxHeight: window.screen.height,
-                maxFrameRate: 3
-            }}};
+            constraints = constraints || {audio: false, video: {
+                mandatory: {
+                    chromeMediaSource: 'desktop',
+                    chromeMediaSourceId: event.data.sourceId,
+                },
+                optional: [
+                    {maxWidth: window.screen.width},
+                    {maxHeight: window.screen.height},
+                    {maxFrameRate: 3},
+                    {googLeakyBucket: true},
+                    {googTemporalLayeredScreencast: true}
+                ]
+            }};
             getUserMedia(constraints, callback);
         }
     } else if (event.data.type == 'getScreenPending') {
