@@ -22,6 +22,7 @@ module.exports = function (constraints, cb) {
         if (window.navigator.userAgent.match('Linux')) maxver = 35;
         if (chromever >= 26 && chromever <= maxver) {
             // chrome 26 - chrome 33 way to do it -- requires bad chrome://flags
+            // note: this is basically in maintenance mode and will go away soon
             constraints = (hasConstraints && constraints) || { 
                 video: {
                     mandatory: {
@@ -43,6 +44,36 @@ module.exports = function (constraints, cb) {
             }, 1000);
             cache[pending] = [callback, hasConstraints ? constraint : null];
             window.postMessage({ type: 'getScreen', id: pending }, '*');
+        }
+    } else if (window.navigator.userAgent.match('Firefox')) {
+        var ffver = parseInt(window.navigator.userAgent.match(/Firefox\/(.*)/)[1], 10);
+        if (ffver >= 33) {
+            constraints = (hasConstraints && constraints) || {
+                video: {
+                    mozMediaSource: 'window',
+                    mediaSource: 'window'
+                }
+            }
+            getUserMedia(constraints, function (err, stream) {
+                callback(err, stream);
+                // workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1045810
+                if (!err) {
+                    var lastTime = stream.currentTime;
+                    var polly = window.setInterval(function () {
+                        if (!stream) window.clearInterval(polly);
+                        if (stream.currentTime == lastTime) {
+                            window.clearInterval(polly);
+                            if (stream.onended) {
+                                stream.onended();
+                            }
+                        }
+                        lastTime = stream.currentTime;
+                    }, 500);
+                }
+            });
+        } else {
+            error = new Error('NavigatorUserMediaError');
+            error.name = 'EXTENSION_UNAVAILABLE'; // does not make much sense but...
         }
     }
 };
