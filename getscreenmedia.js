@@ -96,16 +96,16 @@ window.addEventListener('message', function (event) {
             constraints = constraints || {audio: false, video: {
                 mandatory: {
                     chromeMediaSource: 'desktop',
-                    chromeMediaSourceId: event.data.sourceId,
+                    maxWidth: window.screen.width,
+                    maxHeight: window.screen.height,
+                    maxFrameRate: 3
                 },
                 optional: [
-                    {maxWidth: window.screen.width},
-                    {maxHeight: window.screen.height},
-                    {maxFrameRate: 3},
                     {googLeakyBucket: true},
                     {googTemporalLayeredScreencast: true}
                 ]
             }};
+            constraints.video.mandatory.chromeMediaSourceId = event.data.sourceId;
             getUserMedia(constraints, callback);
         }
     } else if (event.data.type == 'getScreenPending') {
