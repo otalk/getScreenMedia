@@ -17,7 +17,7 @@
   "author": "Henrik Joreteg <henrik@andyet.net>",
   "license": "MIT",
   "dependencies": {
-    "getusermedia": "0.2.x"
+    "getusermedia": "^1.0.0"
   },
   "devDependencies": {
     "browserify": "2.x"
