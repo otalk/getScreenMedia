@@ -56,6 +56,7 @@ See the [handling errors section of the getUserMedia lib](https://github.com/Hen
 ## License
 
 MIT
+The Firefox sample extension is licensed under MPL 2.0
 
 ## Created By
 
