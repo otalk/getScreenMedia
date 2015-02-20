@@ -16,15 +16,16 @@ module.exports = function (constraints, cb) {
         return callback(error);
     }
 
-    if (window.navigator.userAgent.match('Chrome')) { 
+    if (window.navigator.userAgent.match('Chrome')) {
         var chromever = parseInt(window.navigator.userAgent.match(/Chrome\/(.*) /)[1], 10);
         var maxver = 33;
+        var isCef = !window.chrome.webstore;
         // "known" crash in chrome 34 and 35 on linux
         if (window.navigator.userAgent.match('Linux')) maxver = 35;
-        if (chromever >= 26 && chromever <= maxver) {
+        if (isCef || (chromever >= 26 && chromever <= maxver)) {
             // chrome 26 - chrome 33 way to do it -- requires bad chrome://flags
             // note: this is basically in maintenance mode and will go away soon
-            constraints = (hasConstraints && constraints) || { 
+            constraints = (hasConstraints && constraints) || {
                 video: {
                     mandatory: {
                         googLeakyBucket: true,
@@ -79,7 +80,7 @@ module.exports = function (constraints, cb) {
     }
 };
 
-window.addEventListener('message', function (event) { 
+window.addEventListener('message', function (event) {
     if (event.origin != window.location.origin) {
         return;
     }
@@ -123,12 +124,11 @@ var func = (window.navigator.getUserMedia ||
 
 
 module.exports = function (constraints, cb) {
-    var options;
+    var options, error;
     var haveOpts = arguments.length === 2;
     var defaultOpts = {video: true, audio: true};
-    var error;
     var denied = 'PermissionDeniedError';
-    var notSatified = 'ConstraintNotSatisfiedError';
+    var notSatisfied = 'ConstraintNotSatisfiedError';
 
     // make constraints optional
     if (!haveOpts) {
@@ -141,7 +141,39 @@ module.exports = function (constraints, cb) {
         // throw proper error per spec
         error = new Error('MediaStreamError');
         error.name = 'NotSupportedError';
-        return cb(error);
+
+        // keep all callbacks async
+        return window.setTimeout(function () {
+            cb(error);
+        }, 0);
+    }
+
+    // make requesting media from non-http sources trigger an error
+    // current browsers silently drop the request instead
+    var protocol = window.location.protocol;
+    if (protocol !== 'http:' && protocol !== 'https:') {
+        error = new Error('MediaStreamError');
+        error.name = 'NotSupportedError';
+
+        // keep all callbacks async
+        return window.setTimeout(function () {
+            cb(error);
+        }, 0);
+    }
+
+    // normalize error handling when no media types are requested
+    if (!constraints.audio && !constraints.video) {
+        error = new Error('MediaStreamError');
+        error.name = 'NoMediaRequestedError';
+
+        // keep all callbacks async
+        return window.setTimeout(function () {
+            cb(error);
+        }, 0);
+    }
+
+    if (localStorage && localStorage.useFirefoxFakeDevice === "true") {
+        constraints.fake = true;
     }
 
     func.call(window.navigator, constraints, function (stream) {
@@ -156,7 +188,7 @@ module.exports = function (constraints, cb) {
             if (err === denied) {
                 error.name = denied;
             } else {
-                error.name = notSatified;
+                error.name = notSatisfied;
             }
         } else {
             // if we get an error object make sure '.name' property is set
@@ -169,7 +201,7 @@ module.exports = function (constraints, cb) {
                 if (error[denied]) {
                     err.name = denied;
                 } else {
-                    err.name = notSatified;
+                    err.name = notSatisfied;
                 }
             }
         }

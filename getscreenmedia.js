@@ -15,15 +15,16 @@ module.exports = function (constraints, cb) {
         return callback(error);
     }
 
-    if (window.navigator.userAgent.match('Chrome')) { 
+    if (window.navigator.userAgent.match('Chrome')) {
         var chromever = parseInt(window.navigator.userAgent.match(/Chrome\/(.*) /)[1], 10);
         var maxver = 33;
+        var isCef = !window.chrome.webstore;
         // "known" crash in chrome 34 and 35 on linux
         if (window.navigator.userAgent.match('Linux')) maxver = 35;
-        if (chromever >= 26 && chromever <= maxver) {
+        if (isCef || (chromever >= 26 && chromever <= maxver)) {
             // chrome 26 - chrome 33 way to do it -- requires bad chrome://flags
             // note: this is basically in maintenance mode and will go away soon
-            constraints = (hasConstraints && constraints) || { 
+            constraints = (hasConstraints && constraints) || {
                 video: {
                     mandatory: {
                         googLeakyBucket: true,
@@ -78,7 +79,7 @@ module.exports = function (constraints, cb) {
     }
 };
 
-window.addEventListener('message', function (event) { 
+window.addEventListener('message', function (event) {
     if (event.origin != window.location.origin) {
         return;
     }
