@@ -22,16 +22,11 @@ module.exports = function (constraints, cb) {
         // "known" crash in chrome 34 and 35 on linux
         if (window.navigator.userAgent.match('Linux')) maxver = 35;
 
+        // check that the extension is installed by looking for a 
+        // sessionStorage variable that contains the extension id
+        // this has to be set after installation unless the contest
+        // script does that
         if (sessionStorage.getScreenMediaJSExtensionId) {
-            // FIXME:
-            // check that the extension is installed by looking for a sessionStorage
-            // variable that contains a timestamps
-            // this has to be set after installation unless the contest script does it
-            if (0) {
-                error = new Error('NavigatorUserMediaError');
-                error.name = 'EXTENSION_UNAVAILABLE';
-                return callback(error);
-            }
             chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId,
                 {type:'getScreen', id: 1}, null,
                 function (data) {
