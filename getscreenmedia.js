@@ -21,7 +21,38 @@ module.exports = function (constraints, cb) {
         var isCef = !window.chrome.webstore;
         // "known" crash in chrome 34 and 35 on linux
         if (window.navigator.userAgent.match('Linux')) maxver = 35;
-        if (isCef || (chromever >= 26 && chromever <= maxver)) {
+
+        // check that the extension is installed by looking for a 
+        // sessionStorage variable that contains the extension id
+        // this has to be set after installation unless the contest
+        // script does that
+        if (sessionStorage.getScreenMediaJSExtensionId) {
+            chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId,
+                {type:'getScreen', id: 1}, null,
+                function (data) {
+                    if (data.sourceId === '') { // user canceled
+                        var error = new Error('NavigatorUserMediaError');
+                        error.name = 'PERMISSION_DENIED';
+                        callback(error);
+                    } else {
+                        var constraints = constraints || {audio: false, video: {
+                            mandatory: {
+                                chromeMediaSource: 'desktop',
+                                maxWidth: window.screen.width,
+                                maxHeight: window.screen.height,
+                                maxFrameRate: 3
+                            },
+                            optional: [
+                                {googLeakyBucket: true},
+                                {googTemporalLayeredScreencast: true}
+                            ]
+                        }};
+                        constraints.video.mandatory.chromeMediaSourceId = data.sourceId;
+                        getUserMedia(constraints, callback);
+                    }
+                }
+            );
+        } else if (isCef || (chromever >= 26 && chromever <= maxver)) {
             // chrome 26 - chrome 33 way to do it -- requires bad chrome://flags
             // note: this is basically in maintenance mode and will go away soon
             constraints = (hasConstraints && constraints) || {
