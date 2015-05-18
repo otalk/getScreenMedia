@@ -48,7 +48,7 @@ Error handling (denied requests, etc) are handled mostly by the underlying [getU
 
 - `"HTTPS_REQUIRED"`
 
-Because that's a current requirement of Chrome, the only browser that currently supports screensharing.
+Because that's a current requirement of Chrome.
 
 See the [handling errors section of the getUserMedia lib](https://github.com/HenrikJoreteg/getUserMedia#handling-errors-summary) for details about how errors are handled. 
 
