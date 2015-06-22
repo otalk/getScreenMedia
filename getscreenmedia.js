@@ -53,10 +53,11 @@ module.exports = function (constraints, cb) {
                 }
             );
         } else if (isCef && window.cefGetScreenMedia) {
+            //window.cefGetScreenMedia is experimental - may be removed without notice
             window.cefGetScreenMedia(function(sourceId) {
                 if (!sourceId) {
                     var error = new Error('cefGetScreenMediaError');
-                    error.name = 'CEF_GETSCREENMEDIA_CANCELLED';
+                    error.name = 'CEF_GETSCREENMEDIA_CANCELED';
                     callback(error);
                 } else {
                     constraints = constraints || {audio: false, video: {
