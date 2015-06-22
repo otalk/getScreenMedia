@@ -18,11 +18,11 @@ module.exports = function (constraints, cb) {
     if (window.navigator.userAgent.match('Chrome')) {
         var chromever = parseInt(window.navigator.userAgent.match(/Chrome\/(.*) /)[1], 10);
         var maxver = 33;
-        var isCef = !window.chrome.webstore;
+        var isCef = !window.chrome.webstore || window.cefGetScreenMedia;
         // "known" crash in chrome 34 and 35 on linux
         if (window.navigator.userAgent.match('Linux')) maxver = 35;
 
-        // check that the extension is installed by looking for a 
+        // check that the extension is installed by looking for a
         // sessionStorage variable that contains the extension id
         // this has to be set after installation unless the contest
         // script does that
@@ -52,6 +52,29 @@ module.exports = function (constraints, cb) {
                     }
                 }
             );
+        } else if (isCef && window.cefGetScreenMedia) {
+            window.cefGetScreenMedia(function(sourceId) {
+                if (!sourceId) {
+                    var error = new Error('cefGetScreenMediaError');
+                    error.name = 'CEF_GETSCREENMEDIA_CANCELLED';
+                    callback(error);
+                } else {
+                    constraints = constraints || {audio: false, video: {
+                        mandatory: {
+                            chromeMediaSource: 'desktop',
+                            maxWidth: window.screen.width,
+                            maxHeight: window.screen.height,
+                            maxFrameRate: 3
+                        },
+                        optional: [
+                            {googLeakyBucket: true},
+                            {googTemporalLayeredScreencast: true}
+                        ]
+                    }};
+                    constraints.video.mandatory.chromeMediaSourceId = sourceId;
+                    getUserMedia(constraints, callback);
+                }
+            });
         } else if (isCef || (chromever >= 26 && chromever <= maxver)) {
             // chrome 26 - chrome 33 way to do it -- requires bad chrome://flags
             // note: this is basically in maintenance mode and will go away soon
