@@ -35,7 +35,7 @@ module.exports = function (constraints, cb) {
                         error.name = 'PERMISSION_DENIED';
                         callback(error);
                     } else {
-                        var constraints = constraints || {audio: false, video: {
+                        constraints = (hasConstraints && constraints) || {audio: false, video: {
                             mandatory: {
                                 chromeMediaSource: 'desktop',
                                 maxWidth: window.screen.width,
@@ -60,7 +60,7 @@ module.exports = function (constraints, cb) {
                     error.name = 'CEF_GETSCREENMEDIA_CANCELED';
                     callback(error);
                 } else {
-                    constraints = constraints || {audio: false, video: {
+                    constraints = (hasConstraints && constraints) || {audio: false, video: {
                         mandatory: {
                             chromeMediaSource: 'desktop',
                             maxWidth: window.screen.width,
