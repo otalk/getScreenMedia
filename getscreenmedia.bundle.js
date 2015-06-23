@@ -23,7 +23,7 @@ module.exports = function (constraints, cb) {
         // "known" crash in chrome 34 and 35 on linux
         if (window.navigator.userAgent.match('Linux')) maxver = 35;
 
-        // check that the extension is installed by looking for a 
+        // check that the extension is installed by looking for a
         // sessionStorage variable that contains the extension id
         // this has to be set after installation unless the contest
         // script does that
@@ -36,7 +36,7 @@ module.exports = function (constraints, cb) {
                         error.name = 'PERMISSION_DENIED';
                         callback(error);
                     } else {
-                        var constraints = constraints || {audio: false, video: {
+                        constraints = (hasConstraints && constraints) || {audio: false, video: {
                             mandatory: {
                                 chromeMediaSource: 'desktop',
                                 maxWidth: window.screen.width,
@@ -53,6 +53,30 @@ module.exports = function (constraints, cb) {
                     }
                 }
             );
+        } else if (window.cefGetScreenMedia) {
+            //window.cefGetScreenMedia is experimental - may be removed without notice
+            window.cefGetScreenMedia(function(sourceId) {
+                if (!sourceId) {
+                    var error = new Error('cefGetScreenMediaError');
+                    error.name = 'CEF_GETSCREENMEDIA_CANCELED';
+                    callback(error);
+                } else {
+                    constraints = (hasConstraints && constraints) || {audio: false, video: {
+                        mandatory: {
+                            chromeMediaSource: 'desktop',
+                            maxWidth: window.screen.width,
+                            maxHeight: window.screen.height,
+                            maxFrameRate: 3
+                        },
+                        optional: [
+                            {googLeakyBucket: true},
+                            {googTemporalLayeredScreencast: true}
+                        ]
+                    }};
+                    constraints.video.mandatory.chromeMediaSourceId = sourceId;
+                    getUserMedia(constraints, callback);
+                }
+            });
         } else if (isCef || (chromever >= 26 && chromever <= maxver)) {
             // chrome 26 - chrome 33 way to do it -- requires bad chrome://flags
             // note: this is basically in maintenance mode and will go away soon
@@ -158,7 +182,9 @@ module.exports = function (constraints, cb) {
     var options, error;
     var haveOpts = arguments.length === 2;
     var defaultOpts = {video: true, audio: true};
+
     var denied = 'PermissionDeniedError';
+    var altDenied = 'PERMISSION_DENIED';
     var notSatisfied = 'ConstraintNotSatisfiedError';
 
     // make constraints optional
@@ -170,19 +196,6 @@ module.exports = function (constraints, cb) {
     // treat lack of browser support like an error
     if (!func) {
         // throw proper error per spec
-        error = new Error('MediaStreamError');
-        error.name = 'NotSupportedError';
-
-        // keep all callbacks async
-        return window.setTimeout(function () {
-            cb(error);
-        }, 0);
-    }
-
-    // make requesting media from non-http sources trigger an error
-    // current browsers silently drop the request instead
-    var protocol = window.location.protocol;
-    if (protocol !== 'http:' && protocol !== 'https:') {
         error = new Error('MediaStreamError');
         error.name = 'NotSupportedError';
 
@@ -216,7 +229,7 @@ module.exports = function (constraints, cb) {
         // we coerce all non-denied to "constraint not satisfied".
         if (typeof err === 'string') {
             error = new Error('MediaStreamError');
-            if (err === denied) {
+            if (err === denied || err === altDenied) {
                 error.name = denied;
             } else {
                 error.name = notSatisfied;
