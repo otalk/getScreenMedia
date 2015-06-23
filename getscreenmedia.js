@@ -18,7 +18,7 @@ module.exports = function (constraints, cb) {
     if (window.navigator.userAgent.match('Chrome')) {
         var chromever = parseInt(window.navigator.userAgent.match(/Chrome\/(.*) /)[1], 10);
         var maxver = 33;
-        var isCef = !window.chrome.webstore || window.cefGetScreenMedia;
+        var isCef = !window.chrome.webstore;
         // "known" crash in chrome 34 and 35 on linux
         if (window.navigator.userAgent.match('Linux')) maxver = 35;
 
@@ -52,7 +52,7 @@ module.exports = function (constraints, cb) {
                     }
                 }
             );
-        } else if (isCef && window.cefGetScreenMedia) {
+        } else if (window.cefGetScreenMedia) {
             //window.cefGetScreenMedia is experimental - may be removed without notice
             window.cefGetScreenMedia(function(sourceId) {
                 if (!sourceId) {
