@@ -2,7 +2,7 @@
 
 ## What is this?
 
-A tiny browser module that gives us a simple API for getting access to a user's screen. It uses https://github.com/HenrikJoreteg/getUserMedia's API.
+A tiny browser module that gives us a simple API for getting access to a user's screen. It uses https://github.com/HenrikJoreteg/getUserMedia  API.
 
 It gives us a cleaner node.js-style, error-first API and cross-browser handling. No browser support checking necessary, lack of support is treated in the same way as when the user rejects the request: the callback gets passed an error as the first argument.
 
