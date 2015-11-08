@@ -30,7 +30,7 @@ module.exports = function (constraints, cb) {
             chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId,
                 {type:'getScreen', id: 1}, null,
                 function (data) {
-                    if (data.sourceId === '') { // user canceled
+                    if (!data || data.sourceId === '') { // user canceled
                         var error = new Error('NavigatorUserMediaError');
                         error.name = 'PERMISSION_DENIED';
                         callback(error);
