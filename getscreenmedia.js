@@ -98,7 +98,7 @@ module.exports = function (constraints, cb) {
                 error.name = 'EXTENSION_UNAVAILABLE';
                 return callback(error);
             }, 1000);
-            cache[pending] = [callback, hasConstraints ? constraint : null];
+            cache[pending] = [callback, hasConstraints ? constraints : null];
             window.postMessage({ type: 'getScreen', id: pending }, '*');
         }
     } else if (window.navigator.userAgent.match('Firefox')) {
