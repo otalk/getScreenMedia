@@ -41,11 +41,7 @@ module.exports = function (constraints, cb) {
                                 maxWidth: window.screen.width,
                                 maxHeight: window.screen.height,
                                 maxFrameRate: 3
-                            },
-                            optional: [
-                                {googLeakyBucket: true},
-                                {googTemporalLayeredScreencast: true}
-                            ]
+                            }
                         }};
                         constraints.video.mandatory.chromeMediaSourceId = data.sourceId;
                         getUserMedia(constraints, callback);
