@@ -2,9 +2,9 @@
 
 ## What is this?
 
-A tiny browser module that gives us a simple API for getting access to a user's screen. It uses https://github.com/HenrikJoreteg/getUserMedia  API.
+A tiny browser module that gives us a simple API for getting access to a user's screen. It uses https://github.com/otalk/getUserMedia.
 
-It gives us a cleaner node.js-style, error-first API and cross-browser handling. No browser support checking necessary, lack of support is treated in the same way as when the user rejects the request: the callback gets passed an error as the first argument.
+It gives us a cleaner node.js-style, error-first API and cross-browser handling. No browser support checking necessary; lack of support is treated in the same way as when the user rejects the request: the callback gets passed an error as the first argument.
 
 Suitable for use with browserify/CommonJS on the client. 
 
@@ -61,4 +61,3 @@ The Firefox sample extension is licensed under MPL 2.0
 ## Created By
 
 If you like this, follow: [@HenrikJoreteg](http://twitter.com/henrikjoreteg) on twitter.
-
