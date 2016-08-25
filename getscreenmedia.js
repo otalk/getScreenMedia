@@ -105,7 +105,7 @@ module.exports = function (constraints, cb) {
                     mozMediaSource: 'window',
                     mediaSource: 'window'
                 }
-            }
+            };
             getUserMedia(constraints, function (err, stream) {
                 callback(err, stream);
                 // workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1045810
