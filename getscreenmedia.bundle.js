@@ -33,7 +33,7 @@ module.exports = function (constraints, cb) {
                 function (data) {
                     if (!data || data.sourceId === '') { // user canceled
                         var error = new Error('NavigatorUserMediaError');
-                        error.name = 'PERMISSION_DENIED';
+                        error.name = 'NotAllowedError';
                         callback(error);
                     } else {
                         constraints = (hasConstraints && constraints) || {audio: false, video: {
@@ -143,7 +143,7 @@ typeof window !== 'undefined' && window.addEventListener('message', function (ev
 
         if (event.data.sourceId === '') { // user canceled
             var error = new Error('NavigatorUserMediaError');
-            error.name = 'PERMISSION_DENIED';
+            error.name = 'NotAllowedError';
             callback(error);
         } else {
             constraints = constraints || {audio: false, video: {
