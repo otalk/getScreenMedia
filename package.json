@@ -1,11 +1,11 @@
 {
   "name": "getscreenmedia",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "A browser module for attempting to get access to a MediaStream of a user's screen. With a nice node-like API.",
   "main": "getscreenmedia.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HenrikJoreteg/getScreenMedia"
+    "url": "https://github.com/otalk/getScreenMedia"
   },
   "keywords": [
     "browser",
