@@ -130,7 +130,7 @@ module.exports = function (constraints, cb) {
     }
 };
 
-window.addEventListener('message', function (event) {
+typeof window !== 'undefined' && window.addEventListener('message', function (event) {
     if (event.origin != window.location.origin) {
         return;
     }
