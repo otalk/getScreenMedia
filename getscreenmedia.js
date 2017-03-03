@@ -1,5 +1,4 @@
-// getScreenMedia helper by @HenrikJoreteg
-var getUserMedia = require('getusermedia');
+var adapter = require('webrtc-adapter');
 
 // cache for constraints and callback
 var cache = {};
@@ -44,7 +43,11 @@ module.exports = function (constraints, cb) {
                             }
                         }};
                         constraints.video.mandatory.chromeMediaSourceId = data.sourceId;
-                        getUserMedia(constraints, callback);
+                        window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                            callback(null, stream);
+                        }).catch(function (err) {
+                            callback(err);
+                        });
                     }
                 }
             );
@@ -69,7 +72,11 @@ module.exports = function (constraints, cb) {
                         ]
                     }};
                     constraints.video.mandatory.chromeMediaSourceId = sourceId;
-                    getUserMedia(constraints, callback);
+                    window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                        callback(null, stream);
+                    }).catch(function (err) {
+                        callback(err);
+                    });
                 }
             });
         } else if (isCef || (chromever >= 26 && chromever <= maxver)) {
@@ -86,7 +93,11 @@ module.exports = function (constraints, cb) {
                     }
                 }
             };
-            getUserMedia(constraints, callback);
+            window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                callback(null, stream);
+            }).catch(function (err) {
+                callback(err);
+            });
         } else {
             // chrome 34+ way requiring an extension
             var pending = window.setTimeout(function () {
@@ -106,22 +117,21 @@ module.exports = function (constraints, cb) {
                     mediaSource: 'window'
                 }
             };
-            getUserMedia(constraints, function (err, stream) {
-                callback(err, stream);
-                // workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1045810
-                if (!err) {
-                    var lastTime = stream.currentTime;
-                    var polly = window.setInterval(function () {
-                        if (!stream) window.clearInterval(polly);
-                        if (stream.currentTime == lastTime) {
-                            window.clearInterval(polly);
-                            if (stream.onended) {
-                                stream.onended();
-                            }
+            window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                callback(null, stream);
+                var lastTime = stream.currentTime;
+                var polly = window.setInterval(function () {
+                    if (!stream) window.clearInterval(polly);
+                    if (stream.currentTime == lastTime) {
+                        window.clearInterval(polly);
+                        if (stream.onended) {
+                            stream.onended();
                         }
-                        lastTime = stream.currentTime;
-                    }, 500);
-                }
+                    }
+                    lastTime = stream.currentTime;
+                }, 500);
+            }).catch(function (err) {
+                callback(err);
             });
         } else {
             error = new Error('NavigatorUserMediaError');
@@ -158,7 +168,11 @@ typeof window !== 'undefined' && window.addEventListener('message', function (ev
                 ]
             }};
             constraints.video.mandatory.chromeMediaSourceId = event.data.sourceId;
-            getUserMedia(constraints, callback);
+            window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                callback(null, stream);
+            }).catch(function (err) {
+                callback(err);
+            });
         }
     } else if (event.data.type == 'getScreenPending') {
         window.clearTimeout(event.data.id);
