@@ -23,7 +23,7 @@ module.exports = function (constraints, cb) {
 
         // check that the extension is installed by looking for a
         // sessionStorage variable that contains the extension id
-        // this has to be set after installation unless the contest
+        // this has to be set after installation unless the content
         // script does that
         if (sessionStorage.getScreenMediaJSExtensionId) {
             chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId,
