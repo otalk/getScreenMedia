@@ -14,16 +14,13 @@ module.exports = function (constraints, cb) {
         return callback(error);
     }
 
-    if (window.navigator.userAgent.match('Chrome')) {
-        var chromever = parseInt(window.navigator.userAgent.match(/Chrome\/(.*) /)[1], 10);
-        var maxver = 33;
+    if (adapter.browserDetails.browser === 'chrome') {
+        var chromever = adapter.browserDetails.version;
         var isCef = !window.chrome.webstore;
-        // "known" crash in chrome 34 and 35 on linux
-        if (window.navigator.userAgent.match('Linux')) maxver = 35;
 
         // check that the extension is installed by looking for a
         // sessionStorage variable that contains the extension id
-        // this has to be set after installation unless the contest
+        // this has to be set after installation unless the content
         // script does that
         if (sessionStorage.getScreenMediaJSExtensionId) {
             chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId,
@@ -65,11 +62,7 @@ module.exports = function (constraints, cb) {
                             maxWidth: window.screen.width,
                             maxHeight: window.screen.height,
                             maxFrameRate: 3
-                        },
-                        optional: [
-                            {googLeakyBucket: true},
-                            {googTemporalLayeredScreencast: true}
-                        ]
+                        }
                     }};
                     constraints.video.mandatory.chromeMediaSourceId = sourceId;
                     window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
@@ -79,7 +72,7 @@ module.exports = function (constraints, cb) {
                     });
                 }
             });
-        } else if (isCef || (chromever >= 26 && chromever <= maxver)) {
+        } else if (isCef || (chromever >= 26 && chromever <= 35)) {
             // chrome 26 - chrome 33 way to do it -- requires bad chrome://flags
             // note: this is basically in maintenance mode and will go away soon
             constraints = (hasConstraints && constraints) || {
@@ -108,9 +101,8 @@ module.exports = function (constraints, cb) {
             cache[pending] = [callback, hasConstraints ? constraints : null];
             window.postMessage({ type: 'getScreen', id: pending }, '*');
         }
-    } else if (window.navigator.userAgent.match('Firefox')) {
-        var ffver = parseInt(window.navigator.userAgent.match(/Firefox\/(.*)/)[1], 10);
-        if (ffver >= 33) {
+    } else if (adapter.browserDetails.browser === 'firefox') {
+        if (adapter.browserDetails.version >= 33) {
             constraints = (hasConstraints && constraints) || {
                 video: {
                     mozMediaSource: 'window',
@@ -136,6 +128,7 @@ module.exports = function (constraints, cb) {
         } else {
             error = new Error('NavigatorUserMediaError');
             error.name = 'EXTENSION_UNAVAILABLE'; // does not make much sense but...
+            callback(error);
         }
     }
 };
@@ -161,11 +154,7 @@ typeof window !== 'undefined' && window.addEventListener('message', function (ev
                     maxWidth: window.screen.width,
                     maxHeight: window.screen.height,
                     maxFrameRate: 3
-                },
-                optional: [
-                    {googLeakyBucket: true},
-                    {googTemporalLayeredScreencast: true}
-                ]
+                }
             }};
             constraints.video.mandatory.chromeMediaSourceId = event.data.sourceId;
             window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
