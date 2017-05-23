@@ -1,5 +1,3 @@
-var adapter = require('webrtc-adapter');
-
 // cache for constraints and callback
 var cache = {};
 
