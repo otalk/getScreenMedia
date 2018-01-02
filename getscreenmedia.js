@@ -41,6 +41,7 @@ module.exports = function (constraints, cb) {
                             }
                         }};
                         constraints.video.mandatory.chromeMediaSourceId = data.sourceId;
+                        console.debug('screen share constraints', constraints);
                         window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
                             callback(null, stream);
                         }).catch(function (err) {
@@ -70,6 +71,7 @@ module.exports = function (constraints, cb) {
                         ]
                     }};
                     constraints.video.mandatory.chromeMediaSourceId = sourceId;
+                    console.debug('screen share constraints', constraints);
                     window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
                         callback(null, stream);
                     }).catch(function (err) {
@@ -91,6 +93,7 @@ module.exports = function (constraints, cb) {
                     }
                 }
             };
+            console.debug('screen share constraints', constraints);
             window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
                 callback(null, stream);
             }).catch(function (err) {
@@ -115,6 +118,7 @@ module.exports = function (constraints, cb) {
                     mediaSource: 'window'
                 }
             };
+            console.debug('screen share constraints', constraints);
             window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
                 callback(null, stream);
                 var lastTime = stream.currentTime;
@@ -166,6 +170,7 @@ typeof window !== 'undefined' && window.addEventListener('message', function (ev
                 ]
             }};
             constraints.video.mandatory.chromeMediaSourceId = event.data.sourceId;
+            console.debug('screen share constraints', constraints);
             window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
                 callback(null, stream);
             }).catch(function (err) {
