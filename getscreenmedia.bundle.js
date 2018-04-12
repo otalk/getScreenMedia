@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.getScreenMedia = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.getScreenMedia = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 // cache for constraints and callback
 var cache = {};
 
@@ -13,16 +13,13 @@ module.exports = function (constraints, cb) {
         return callback(error);
     }
 
-    if (window.navigator.userAgent.match('Chrome')) {
-        var chromever = parseInt(window.navigator.userAgent.match(/Chrome\/(.*) /)[1], 10);
-        var maxver = 33;
+    if (adapter.browserDetails.browser === 'chrome') {
+        var chromever = adapter.browserDetails.version;
         var isCef = !window.chrome.webstore;
-        // "known" crash in chrome 34 and 35 on linux
-        if (window.navigator.userAgent.match('Linux')) maxver = 35;
 
         // check that the extension is installed by looking for a
         // sessionStorage variable that contains the extension id
-        // this has to be set after installation unless the contest
+        // this has to be set after installation unless the content
         // script does that
         if (sessionStorage.getScreenMediaJSExtensionId) {
             chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId,
@@ -64,11 +61,7 @@ module.exports = function (constraints, cb) {
                             maxWidth: window.screen.width,
                             maxHeight: window.screen.height,
                             maxFrameRate: 3
-                        },
-                        optional: [
-                            {googLeakyBucket: true},
-                            {googTemporalLayeredScreencast: true}
-                        ]
+                        }
                     }};
                     constraints.video.mandatory.chromeMediaSourceId = sourceId;
                     window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
@@ -78,7 +71,7 @@ module.exports = function (constraints, cb) {
                     });
                 }
             });
-        } else if (isCef || (chromever >= 26 && chromever <= maxver)) {
+        } else if (isCef || (chromever >= 26 && chromever <= 35)) {
             // chrome 26 - chrome 33 way to do it -- requires bad chrome://flags
             // note: this is basically in maintenance mode and will go away soon
             constraints = (hasConstraints && constraints) || {
@@ -107,9 +100,8 @@ module.exports = function (constraints, cb) {
             cache[pending] = [callback, hasConstraints ? constraints : null];
             window.postMessage({ type: 'getScreen', id: pending }, '*');
         }
-    } else if (window.navigator.userAgent.match('Firefox')) {
-        var ffver = parseInt(window.navigator.userAgent.match(/Firefox\/(.*)/)[1], 10);
-        if (ffver >= 33) {
+    } else if (adapter.browserDetails.browser === 'firefox') {
+        if (adapter.browserDetails.version >= 33) {
             constraints = (hasConstraints && constraints) || {
                 video: {
                     mozMediaSource: 'window',
@@ -135,6 +127,19 @@ module.exports = function (constraints, cb) {
         } else {
             error = new Error('NavigatorUserMediaError');
             error.name = 'EXTENSION_UNAVAILABLE'; // does not make much sense but...
+            callback(error);
+        }
+    } else if (adapter.browserDetails.browser === 'MicrosoftEdge') {
+        if ('getDisplayMedia' in window.navigator) {
+            window.navigator.getDisplayMedia({video: true}).then(function (stream) {
+                callback(null, stream);
+            }).catch(function (err) {
+                callback(err);
+            });
+        } else {
+            error = new Error('Screensharing is not supported');
+            error.name = 'NotSupportedError';
+            callback(error);
         }
     }
 };
@@ -160,11 +165,7 @@ typeof window !== 'undefined' && window.addEventListener('message', function (ev
                     maxWidth: window.screen.width,
                     maxHeight: window.screen.height,
                     maxFrameRate: 3
-                },
-                optional: [
-                    {googLeakyBucket: true},
-                    {googTemporalLayeredScreencast: true}
-                ]
+                }
             }};
             constraints.video.mandatory.chromeMediaSourceId = event.data.sourceId;
             window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
