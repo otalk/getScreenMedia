@@ -128,6 +128,18 @@ module.exports = function (constraints, cb) {
             error.name = 'EXTENSION_UNAVAILABLE'; // does not make much sense but...
             callback(error);
         }
+    } else if (adapter.browserDetails.browser === 'MicrosoftEdge') {
+        if ('getDisplayMedia' in window.navigator) {
+            window.navigator.getDisplayMedia({video: true}).then(function (stream) {
+                callback(null, stream);
+            }).catch(function (err) {
+                callback(err);
+            });
+        } else {
+            error = new Error('Screensharing is not supported');
+            error.name = 'NotSupportedError';
+            callback(error);
+        }
     }
 };
 
