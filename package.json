@@ -11,15 +11,11 @@
     "browser",
     "getUserMedia",
     "screen sharing",
-    "WebRTC",
-    "browserify"
+    "WebRTC"
   ],
   "author": "Henrik Joreteg <henrik@andyet.net>",
   "license": "MIT",
   "peerDependencies": {
     "webrtc-adapter": "^4.0.0"
-  },
-  "devDependencies": {
-    "browserify": "^13.1.0"
   }
 }
