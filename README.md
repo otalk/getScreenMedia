@@ -2,14 +2,11 @@
 
 ## What is this?
 
-A tiny browser module that gives us a simple API for getting access to a user's screen. It uses https://github.com/otalk/getUserMedia.
+A tiny browser module that gives us a simple API for getting access to a user's screen.
 
 It gives us a cleaner node.js-style, error-first API and cross-browser handling. No browser support checking necessary; lack of support is treated in the same way as when the user rejects the request: the callback gets passed an error as the first argument.
 
 Suitable for use with browserify/CommonJS on the client.
-
-If you're not using browserify or you want AMD support use `getscreenmedia.bundle.js`. Note that if no module system is detected it will attach a function called `getScreenMedia` to `window`.
-
 
 ## Installing
 
@@ -19,7 +16,7 @@ npm install getscreenmedia
 
 ## How to use it
 
-First build and install a domain-specific extension for [Chrome](https://github.com/otalk/getScreenMedia/tree/master/chrome-extension-sample) or/and [Firefox](https://github.com/otalk/getScreenMedia/tree/master/firefox-extension-sample).
+First build and install a domain-specific extension for [Chrome](https://github.com/otalk/getScreenMedia/tree/master/chrome-extension-sample). Firefox and Microsoft Edge will work out of the box.
 
 Use the snippet below to get a screen stream, similar to [getUserMedia](https://github.com/otalk/getUserMedia).
 ```js
