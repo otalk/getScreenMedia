@@ -5,12 +5,19 @@ module.exports = function (constraints, cb) {
     var callback = hasConstraints ? cb : constraints;
     var error;
 
-    if (adapter.browserDetails.browser === 'chrome') {
-        // check that the extension is installed by looking for a
-        // sessionStorage variable that contains the extension id
-        // this has to be set after installation unless the content
-        // script does that
+    if ('getDisplayMedia' in window.navigator) { // prefer spec getDisplayMedia
+        window.navigator.getDisplayMedia(constraints)
+        .then(function (stream) {
+            callback(null, stream);
+        }).catch(function (err) {
+            callback(err);
+        });
+    } else if (adapter.browserDetails.browser === 'chrome') {
         if (sessionStorage.getScreenMediaJSExtensionId) {
+            // check that the extension is installed by looking for a
+            // sessionStorage variable that contains the extension id
+            // this has to be set after installation unless the content
+            // script does that
             chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId,
                 {type:'getScreen', id: 1}, null,
                 function (data) {
@@ -72,12 +79,6 @@ module.exports = function (constraints, cb) {
             }
         };
         window.navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
-            callback(null, stream);
-        }).catch(function (err) {
-            callback(err);
-        });
-    } else if (adapter.browserDetails.browser === 'edge' && 'getDisplayMedia' in window.navigator) {
-        window.navigator.getDisplayMedia({video: true}).then(function (stream) {
             callback(null, stream);
         }).catch(function (err) {
             callback(err);
