@@ -76,7 +76,7 @@ module.exports = function (constraints, cb) {
         }).catch(function (err) {
             callback(err);
         });
-    } else if (adapter.browserDetails.browser === 'MicrosoftEdge' && 'getDisplayMedia' in window.navigator) {
+    } else if (adapter.browserDetails.browser === 'edge' && 'getDisplayMedia' in window.navigator) {
         window.navigator.getDisplayMedia({video: true}).then(function (stream) {
             callback(null, stream);
         }).catch(function (err) {
