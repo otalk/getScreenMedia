@@ -16,6 +16,6 @@
   "author": "Henrik Joreteg <henrik@andyet.net>",
   "license": "MIT",
   "peerDependencies": {
-    "webrtc-adapter": "^4.0.0"
+    "webrtc-adapter": "^6.0.0"
   }
 }
