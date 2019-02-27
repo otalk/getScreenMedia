@@ -5,7 +5,7 @@ module.exports = function (constraints, cb) {
     var callback = hasConstraints ? cb : constraints;
     var error;
 
-    if ('getDisplayMedia' in window.navigator) { // prefer spec getDisplayMedia
+    if ('getDisplayMedia' in window.navigator.mediaDevices) { // prefer spec getDisplayMedia
         window.navigator.getDisplayMedia(constraints)
         .then(function (stream) {
             callback(null, stream);
